@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 import * as Speech from 'expo-speech';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { labels, Language } from '@/lib/i18n';
@@ -21,6 +21,7 @@ function ZikriApp(){
  const todayKey=new Date().toISOString().slice(0,10);
  const [items,setItems]=useState(seed); const [listening,setListening]=useState(false); const [recognizing,setRecognizing]=useState(false); const [draft,setDraft]=useState(''); const [selectedDate,setSelectedDate]=useState(todayKey); const [question,setQuestion]=useState(''); const [asking,setAsking]=useState(false); const [chat,setChat]=useState<ChatMessage[]>([{role:'assistant',content:'Hello! I am Zikri, your AI teacher and daily assistant. What would you like to learn?'}]); const t=labels[lang];
  const title=useMemo(()=>({today:t.today,calendar:t.calendar,assistant:lang==='am'?'ረዳት':lang==='ti'?'ሓጋዚ':'Assistant',notes:t.notes,settings:t.settings}[tab]),[tab,t,lang]);
+ useEffect(()=>{supabase.auth.getSession().then(({data})=>{if(!data.session)supabase.auth.signInAnonymously()})},[]);
  useSpeechRecognitionEvent('start',()=>setRecognizing(true));
  useSpeechRecognitionEvent('end',()=>setRecognizing(false));
  useSpeechRecognitionEvent('result',(event)=>setDraft(event.results[0]?.transcript??''));
