@@ -6,12 +6,14 @@ import { useMemo, useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { labels, Language } from '@/lib/i18n';
+import { PinGate } from '@/components/PinGate';
 
 type Tab='today'|'calendar'|'notes'|'settings';
 type Item={id:string;kind:'reminder'|'note';title:string;time?:string;done?:boolean};
 const seed:Item[]=[{id:'1',kind:'reminder',title:'Call mother',time:'9:00 AM'},{id:'2',kind:'reminder',title:'Take the documents',time:'10:00 AM'}];
 
-export default function Home(){
+export default function Home(){return <PinGate><ZikriApp/></PinGate>}
+function ZikriApp(){
  const [tab,setTab]=useState<Tab>('today'); const [lang,setLang]=useState<Language>('en'); const [voice,setVoice]=useState(true);
  const [items,setItems]=useState(seed); const [listening,setListening]=useState(false); const [recognizing,setRecognizing]=useState(false); const [draft,setDraft]=useState(''); const [selectedDay,setSelectedDay]=useState(new Date().getDate()); const t=labels[lang];
  const title=useMemo(()=>({today:t.today,calendar:t.calendar,notes:t.notes,settings:t.settings}[tab]),[tab,t]);
