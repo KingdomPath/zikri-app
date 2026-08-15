@@ -1,0 +1,10 @@
+create extension if not exists pgcrypto;
+create table if not exists public.profiles (id uuid primary key references auth.users(id) on delete cascade, display_name text, preferred_language text not null default 'en' check (preferred_language in ('en','am','ti')), voice_replies boolean not null default true, timezone text not null default 'America/Edmonton', created_at timestamptz not null default now());
+create table if not exists public.reminders (id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id) on delete cascade, title text not null, description text, due_at timestamptz not null, recurrence_rule text, completed_at timestamptz, source_language text not null default 'en', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.notes (id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id) on delete cascade, title text, body text not null, source_language text not null default 'en', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.appointments (id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id) on delete cascade, title text not null, starts_at timestamptz not null, ends_at timestamptz, location text, created_at timestamptz not null default now());
+alter table public.profiles enable row level security; alter table public.reminders enable row level security; alter table public.notes enable row level security; alter table public.appointments enable row level security;
+create policy "profiles_own" on public.profiles for all using (auth.uid()=id) with check (auth.uid()=id);
+create policy "reminders_own" on public.reminders for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
+create policy "notes_own" on public.notes for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
+create policy "appointments_own" on public.appointments for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
